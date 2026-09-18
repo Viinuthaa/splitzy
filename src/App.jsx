@@ -1,6 +1,7 @@
 import './App.css'
 import { useState } from 'react'
 import { calculateAllocation } from './allocation'
+import { validateSplit } from './validation'
 
 function App() {
   const [roommates, setRoommates] = useState([])
@@ -11,6 +12,7 @@ function App() {
   const [cost, setCost] = useState('')
   const [preferences, setPreferences] = useState({})
   const [allocation, setAllocation] = useState(null)
+  const [error, setError] = useState('')
 
   function addRoommate() {
     if (!name.trim()) return
@@ -23,6 +25,7 @@ function App() {
       [roommate.id]: {}
     })
     setName('')
+    setAllocation(null)
   }
 
   function removeRoommate(id) {
@@ -30,12 +33,18 @@ function App() {
 
     const updated = { ...preferences }
     delete updated[id]
+
     setPreferences(updated)
     setAllocation(null)
   }
 
   function addItem() {
     if (!itemName.trim()) return
+
+    if (type === 'expense' && Number(cost) <= 0) {
+      setError('Enter a valid expense amount.')
+      return
+    }
 
     const item = {
       id: Date.now(),
@@ -47,6 +56,7 @@ function App() {
     setItems([...items, item])
     setItemName('')
     setCost('')
+    setError('')
     setAllocation(null)
   }
 
@@ -63,16 +73,14 @@ function App() {
         [itemId]: Number(value)
       }
     })
+
+    setError('')
     setAllocation(null)
   }
 
   function getTotal(roommateId) {
     return Object.values(preferences[roommateId] || {})
       .reduce((sum, value) => sum + value, 0)
-  }
-
-  function calculate() {
-    setAllocation(calculateAllocation(roommates, items, preferences))
   }
 
   function getAssignedValue(roommateId, item) {
@@ -95,6 +103,7 @@ function App() {
 
   function getEqualSplit() {
     const split = {}
+
     roommates.forEach(roommate => {
       split[roommate.id] = []
     })
@@ -105,6 +114,19 @@ function App() {
     })
 
     return split
+  }
+
+  function calculate() {
+    const message = validateSplit(roommates, items, preferences)
+
+    if (message) {
+      setError(message)
+      setAllocation(null)
+      return
+    }
+
+    setError('')
+    setAllocation(calculateAllocation(roommates, items, preferences))
   }
 
   const equalSplit = allocation ? getEqualSplit() : null
@@ -154,6 +176,7 @@ function App() {
           {type === 'expense' && (
             <input
               type="number"
+              min="1"
               value={cost}
               onChange={e => setCost(e.target.value)}
               placeholder="₹"
@@ -207,6 +230,8 @@ function App() {
               </strong>
             </div>
           ))}
+
+          {error && <p className="error">{error}</p>}
 
           <button className="calculate" onClick={calculate}>
             Calculate split →
