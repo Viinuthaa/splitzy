@@ -1,5 +1,6 @@
 import './App.css'
 import { useState } from 'react'
+import { calculateAllocation } from './allocation'
 
 function App() {
   const [roommates, setRoommates] = useState([])
@@ -9,6 +10,7 @@ function App() {
   const [type, setType] = useState('chore')
   const [cost, setCost] = useState('')
   const [preferences, setPreferences] = useState({})
+  const [allocation, setAllocation] = useState(null)
 
   function addRoommate() {
     if (!name.trim()) return
@@ -25,10 +27,6 @@ function App() {
 
   function removeRoommate(id) {
     setRoommates(roommates.filter(roommate => roommate.id !== id))
-
-    const updated = { ...preferences }
-    delete updated[id]
-    setPreferences(updated)
   }
 
   function addItem() {
@@ -61,8 +59,12 @@ function App() {
   }
 
   function getTotal(roommateId) {
-    const values = preferences[roommateId] || {}
-    return Object.values(values).reduce((sum, value) => sum + value, 0)
+    return Object.values(preferences[roommateId] || {})
+      .reduce((sum, value) => sum + value, 0)
+  }
+
+  function calculate() {
+    setAllocation(calculateAllocation(roommates, items, preferences))
   }
 
   return (
@@ -159,6 +161,30 @@ function App() {
               <strong>
                 Total: {getTotal(roommate.id)} / 100
               </strong>
+            </div>
+          ))}
+
+          <button className="calculate" onClick={calculate}>
+            Calculate split →
+          </button>
+        </section>
+      )}
+
+      {allocation && (
+        <section>
+          <h2>Suggested allocation</h2>
+
+          {roommates.map(roommate => (
+            <div className="result" key={roommate.id}>
+              <h3>{roommate.name}</h3>
+
+              {allocation[roommate.id].length === 0 ? (
+                <p>Nothing assigned</p>
+              ) : (
+                allocation[roommate.id].map(item => (
+                  <div key={item.id}>{item.label}</div>
+                ))
+              )}
             </div>
           ))}
         </section>
