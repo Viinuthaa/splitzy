@@ -29,6 +29,11 @@ h2 {
   font-weight: 500;
 }
 
+h3 {
+  margin-top: 0;
+  color: #8b2635;
+}
+
 .input-row {
   display: flex;
   gap: 8px;
@@ -63,7 +68,6 @@ button {
 .entry {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 14px 16px;
   margin-bottom: 8px;
   border-bottom: 1px solid #c7b38f;
@@ -75,4 +79,28 @@ button {
   background: transparent;
   color: #8b2635;
   font-size: 20px;
+}
+
+.preference-card {
+  padding: 22px;
+  margin-bottom: 18px;
+  border: 1px solid #b08d57;
+  background: #f7f0e3;
+}
+
+.preference {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #d5c5a8;
+}
+
+.preference input {
+  width: 80px;
+}
+
+.preference-card strong {
+  display: block;
+  margin-top: 18px;
 }
