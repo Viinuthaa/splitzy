@@ -108,13 +108,30 @@ button {
   margin-top: 10px;
 }
 
+.results {
+  padding-top: 20px;
+  border-top: 1px solid #b08d57;
+}
+
 .result {
-  padding: 18px;
-  margin-bottom: 12px;
-  border-left: 4px solid #8b2635;
+  padding: 20px;
+  margin-bottom: 14px;
+  border: 1px solid #b08d57;
   background: #f7f0e3;
 }
 
-.result div {
-  padding: 6px 0;
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #d5c5a8;
+}
+
+.result-item small {
+  color: #6e5c4b;
+}
+
+.result > strong {
+  display: block;
+  margin-top: 16px;
 }

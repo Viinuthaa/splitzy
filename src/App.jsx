@@ -27,6 +27,11 @@ function App() {
 
   function removeRoommate(id) {
     setRoommates(roommates.filter(roommate => roommate.id !== id))
+
+    const updated = { ...preferences }
+    delete updated[id]
+    setPreferences(updated)
+    setAllocation(null)
   }
 
   function addItem() {
@@ -42,10 +47,12 @@ function App() {
     setItems([...items, item])
     setItemName('')
     setCost('')
+    setAllocation(null)
   }
 
   function removeItem(id) {
     setItems(items.filter(item => item.id !== id))
+    setAllocation(null)
   }
 
   function updatePreference(roommateId, itemId, value) {
@@ -56,6 +63,7 @@ function App() {
         [itemId]: Number(value)
       }
     })
+    setAllocation(null)
   }
 
   function getTotal(roommateId) {
@@ -65,6 +73,10 @@ function App() {
 
   function calculate() {
     setAllocation(calculateAllocation(roommates, items, preferences))
+  }
+
+  function getAssignedValue(roommateId, item) {
+    return preferences[roommateId]?.[item.id] || 0
   }
 
   return (
@@ -171,22 +183,42 @@ function App() {
       )}
 
       {allocation && (
-        <section>
+        <section className="results">
+          <p>Your split</p>
           <h2>Suggested allocation</h2>
 
-          {roommates.map(roommate => (
-            <div className="result" key={roommate.id}>
-              <h3>{roommate.name}</h3>
+          {roommates.map(roommate => {
+            const assigned = allocation[roommate.id]
 
-              {allocation[roommate.id].length === 0 ? (
-                <p>Nothing assigned</p>
-              ) : (
-                allocation[roommate.id].map(item => (
-                  <div key={item.id}>{item.label}</div>
-                ))
-              )}
-            </div>
-          ))}
+            return (
+              <div className="result" key={roommate.id}>
+                <h3>{roommate.name}</h3>
+
+                {assigned.length === 0 ? (
+                  <span>Nothing assigned</span>
+                ) : (
+                  assigned.map(item => (
+                    <div className="result-item" key={item.id}>
+                      <span>{item.label}</span>
+                      <small>
+                        {getAssignedValue(roommate.id, item)} points
+                      </small>
+                    </div>
+                  ))
+                )}
+
+                <strong>
+                  Assigned preference: {
+                    assigned.reduce(
+                      (sum, item) =>
+                        sum + getAssignedValue(roommate.id, item),
+                      0
+                    )
+                  }
+                </strong>
+              </div>
+            )
+          })}
         </section>
       )}
     </main>
