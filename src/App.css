@@ -16,6 +16,7 @@ h1 {
   margin: 25px 0 50px;
   font-size: 52px;
   font-weight: 500;
+  color: #241b17;
 }
 
 section {
@@ -27,6 +28,7 @@ h2 {
   margin-bottom: 18px;
   font-size: 24px;
   font-weight: 500;
+  color: #241b17;
 }
 
 h3 {
@@ -134,4 +136,34 @@ button {
 .result > strong {
   display: block;
   margin-top: 16px;
+}
+
+.comparison {
+  padding-top: 20px;
+  border-top: 1px solid #b08d57;
+}
+
+.comparison-box {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+
+.comparison-box div {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #b08d57;
+  background: #f7f0e3;
+}
+
+.comparison-box span,
+.comparison-box strong,
+.comparison-box small {
+  display: block;
+}
+
+.comparison-box strong {
+  margin: 12px 0 4px;
+  font-size: 32px;
+  color: #8b2635;
 }

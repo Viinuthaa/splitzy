@@ -79,6 +79,38 @@ function App() {
     return preferences[roommateId]?.[item.id] || 0
   }
 
+  function getScores(split) {
+    return roommates.map(roommate =>
+      split[roommate.id].reduce(
+        (sum, item) => sum + getAssignedValue(roommate.id, item),
+        0
+      )
+    )
+  }
+
+  function getImbalance(scores) {
+    if (!scores.length) return 0
+    return Math.max(...scores) - Math.min(...scores)
+  }
+
+  function getEqualSplit() {
+    const split = {}
+    roommates.forEach(roommate => {
+      split[roommate.id] = []
+    })
+
+    items.forEach((item, index) => {
+      const roommate = roommates[index % roommates.length]
+      split[roommate.id].push(item)
+    })
+
+    return split
+  }
+
+  const equalSplit = allocation ? getEqualSplit() : null
+  const splitScores = allocation ? getScores(allocation) : []
+  const equalScores = equalSplit ? getScores(equalSplit) : []
+
   return (
     <main>
       <p>Splitzy</p>
@@ -208,17 +240,40 @@ function App() {
                 )}
 
                 <strong>
-                  Assigned preference: {
-                    assigned.reduce(
-                      (sum, item) =>
-                        sum + getAssignedValue(roommate.id, item),
-                      0
-                    )
-                  }
+                  Assigned preference:{' '}
+                  {getScores(allocation)[
+                    roommates.findIndex(r => r.id === roommate.id)
+                  ]}
                 </strong>
               </div>
             )
           })}
+        </section>
+      )}
+
+      {allocation && (
+        <section className="comparison">
+          <p>Comparison</p>
+          <h2>How balanced is the split?</h2>
+
+          <div className="comparison-box">
+            <div>
+              <span>Equal split</span>
+              <strong>{getImbalance(equalScores)}</strong>
+              <small>imbalance</small>
+            </div>
+
+            <div>
+              <span>Splitzy</span>
+              <strong>{getImbalance(splitScores)}</strong>
+              <small>imbalance</small>
+            </div>
+          </div>
+
+          <small>
+            Lower imbalance means the assigned preference values are closer
+            together.
+          </small>
         </section>
       )}
     </main>
