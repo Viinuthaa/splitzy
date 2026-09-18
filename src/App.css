@@ -1,6 +1,6 @@
 main {
   min-height: 100vh;
-  padding: 80px 10%;
+  padding: 70px 10%;
   background: #eee4d0;
   color: #241b17;
   font-family: Georgia, serif;
@@ -13,16 +13,49 @@ p {
 }
 
 h1 {
-  margin: 30px 0;
-  font-size: 64px;
+  margin: 30px 0 45px;
+  font-size: 52px;
   font-weight: 500;
 }
 
-button {
-  padding: 14px 24px;
+section {
+  max-width: 520px;
+}
+
+.roommate {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  border: 1px solid #b08d57;
+  background: #f7f0e3;
+}
+
+.roommate button {
+  border: 0;
+  background: none;
+  color: #8b2635;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.add,
+.continue {
+  padding: 13px 20px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.add {
+  width: 100%;
+  border: 1px dashed #b08d57;
+  background: transparent;
+  color: #8b2635;
+}
+
+.continue {
+  margin-top: 30px;
   border: 1px solid #b08d57;
   background: #8b2635;
   color: #f7f0e3;
-  font: inherit;
-  cursor: pointer;
 }
