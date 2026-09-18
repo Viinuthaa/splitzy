@@ -1,6 +1,6 @@
 main {
   min-height: 100vh;
-  padding: 70px 10%;
+  padding: 60px 10%;
   background: #eee4d0;
   color: #241b17;
   font-family: Georgia, serif;
@@ -13,49 +13,66 @@ p {
 }
 
 h1 {
-  margin: 30px 0 45px;
+  margin: 25px 0 50px;
   font-size: 52px;
   font-weight: 500;
 }
 
 section {
-  max-width: 520px;
+  max-width: 720px;
+  margin-bottom: 45px;
 }
 
-.roommate {
+h2 {
+  margin-bottom: 18px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.input-row {
   display: flex;
-  justify-content: space-between;
-  padding: 16px 18px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+input,
+select,
+button {
+  padding: 12px 14px;
+  font: inherit;
+}
+
+input,
+select {
   border: 1px solid #b08d57;
   background: #f7f0e3;
+  color: #241b17;
 }
 
-.roommate button {
-  border: 0;
-  background: none;
-  color: #8b2635;
-  font-size: 20px;
-  cursor: pointer;
+.input-row input:first-child {
+  flex: 1;
 }
 
-.add,
-.continue {
-  padding: 13px 20px;
-  font: inherit;
-  cursor: pointer;
-}
-
-.add {
-  width: 100%;
-  border: 1px dashed #b08d57;
-  background: transparent;
-  color: #8b2635;
-}
-
-.continue {
-  margin-top: 30px;
-  border: 1px solid #b08d57;
+button {
+  border: 1px solid #8b2635;
   background: #8b2635;
   color: #f7f0e3;
+  cursor: pointer;
+}
+
+.entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #c7b38f;
+}
+
+.entry button {
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: #8b2635;
+  font-size: 20px;
 }
