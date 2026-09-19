@@ -1,16 +1,21 @@
-# React + Vite
+# Splitzy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Splitzy is a small web app for splitting chores and expenses between roommates.
 
-Currently, two official plugins are available:
+Instead of simply dividing everything equally, Splitzy takes each person's preferences into account and creates a preference-based allocation.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The idea is inspired by **fair division** — finding ways to divide shared resources while considering what each person values or dislikes.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Add roommates
+- Add chores and expenses
+- Set preference points
+- Generate a preference-based split
+- Compare the split with a simple baseline
 
-## Expanding the ESLint configuration
+## Tech
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+React · JavaScript · CSS · Vite
+
+Built as a small project to experiment with fairer ways of splitting things between roommates.
