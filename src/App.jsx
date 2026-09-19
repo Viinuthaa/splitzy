@@ -6,24 +6,23 @@ import { validateSplit } from './validation'
 function App() {
   const [roommates, setRoommates] = useState([])
   const [items, setItems] = useState([])
-  const [name, setName] = useState('')
-  const [itemName, setItemName] = useState('')
-  const [type, setType] = useState('chore')
-  const [cost, setCost] = useState('')
   const [preferences, setPreferences] = useState({})
   const [allocation, setAllocation] = useState(null)
   const [error, setError] = useState('')
 
+  const [name, setName] = useState('')
+  const [itemName, setItemName] = useState('')
+  const [type, setType] = useState('chore')
+  const [cost, setCost] = useState('')
+
   function addRoommate() {
     if (!name.trim()) return
 
-    const roommate = { id: Date.now(), name: name.trim() }
+    setRoommates([
+      ...roommates,
+      { id: Date.now(), name: name.trim() }
+    ])
 
-    setRoommates([...roommates, roommate])
-    setPreferences({
-      ...preferences,
-      [roommate.id]: {}
-    })
     setName('')
     setAllocation(null)
   }
@@ -33,27 +32,27 @@ function App() {
 
     const updated = { ...preferences }
     delete updated[id]
-
     setPreferences(updated)
+
     setAllocation(null)
   }
 
   function addItem() {
     if (!itemName.trim()) return
 
-    if (type === 'expense' && Number(cost) <= 0) {
+    if (type === 'expense' && (!cost || Number(cost) <= 0)) {
       setError('Enter a valid expense amount.')
       return
     }
 
-    const item = {
+    const newItem = {
       id: Date.now(),
       label: itemName.trim(),
       type,
       cost: type === 'expense' ? Number(cost) : 0
     }
 
-    setItems([...items, item])
+    setItems([...items, newItem])
     setItemName('')
     setCost('')
     setError('')
@@ -62,58 +61,50 @@ function App() {
 
   function removeItem(id) {
     setItems(items.filter(item => item.id !== id))
+
+    const updated = { ...preferences }
+
+    roommates.forEach(roommate => {
+      if (updated[roommate.id]) {
+        delete updated[roommate.id][id]
+      }
+    })
+
+    setPreferences(updated)
     setAllocation(null)
   }
 
   function updatePreference(roommateId, itemId, value) {
+    if (value === '') {
+      setPreferences({
+        ...preferences,
+        [roommateId]: {
+          ...preferences[roommateId],
+          [itemId]: ''
+        }
+      })
+      setAllocation(null)
+      return
+    }
+
+    const number = Number(value)
+
+    if (number < 0 || number > 100) return
+
     setPreferences({
       ...preferences,
       [roommateId]: {
         ...preferences[roommateId],
-        [itemId]: Number(value)
+        [itemId]: number
       }
     })
 
-    setError('')
     setAllocation(null)
   }
 
   function getTotal(roommateId) {
     return Object.values(preferences[roommateId] || {})
-      .reduce((sum, value) => sum + value, 0)
-  }
-
-  function getAssignedValue(roommateId, item) {
-    return preferences[roommateId]?.[item.id] || 0
-  }
-
-  function getScores(split) {
-    return roommates.map(roommate =>
-      split[roommate.id].reduce(
-        (sum, item) => sum + getAssignedValue(roommate.id, item),
-        0
-      )
-    )
-  }
-
-  function getImbalance(scores) {
-    if (!scores.length) return 0
-    return Math.max(...scores) - Math.min(...scores)
-  }
-
-  function getEqualSplit() {
-    const split = {}
-
-    roommates.forEach(roommate => {
-      split[roommate.id] = []
-    })
-
-    items.forEach((item, index) => {
-      const roommate = roommates[index % roommates.length]
-      split[roommate.id].push(item)
-    })
-
-    return split
+      .reduce((sum, value) => sum + (Number(value) || 0), 0)
   }
 
   function calculate() {
@@ -129,14 +120,12 @@ function App() {
     setAllocation(calculateAllocation(roommates, items, preferences))
   }
 
-  const equalSplit = allocation ? getEqualSplit() : null
-  const splitScores = allocation ? getScores(allocation) : []
-  const equalScores = equalSplit ? getScores(equalSplit) : []
-
   return (
     <main>
-      <p>Splitzy</p>
-      <h1>Set up your split</h1>
+      <header>
+        <p>Splitzy</p>
+        <h1>Who's splitting?</h1>
+      </header>
 
       <section>
         <h2>Roommates</h2>
@@ -165,10 +154,16 @@ function App() {
           <input
             value={itemName}
             onChange={e => setItemName(e.target.value)}
-            placeholder="Item name"
+            placeholder="Cleaning, groceries..."
           />
 
-          <select value={type} onChange={e => setType(e.target.value)}>
+          <select
+            value={type}
+            onChange={e => {
+              setType(e.target.value)
+              setError('')
+            }}
+          >
             <option value="chore">Chore</option>
             <option value="expense">Expense</option>
           </select>
@@ -176,7 +171,7 @@ function App() {
           {type === 'expense' && (
             <input
               type="number"
-              min="1"
+              min="0"
               value={cost}
               onChange={e => setCost(e.target.value)}
               placeholder="₹"
@@ -186,12 +181,17 @@ function App() {
           <button onClick={addItem}>Add</button>
         </div>
 
+        {error && (
+          <p className="error">{error}</p>
+        )}
+
         {items.map(item => (
           <div className="entry" key={item.id}>
             <span>
               {item.label}
               {item.type === 'expense' && ` — ₹${item.cost}`}
             </span>
+
             <button onClick={() => removeItem(item.id)}>×</button>
           </div>
         ))}
@@ -199,41 +199,61 @@ function App() {
 
       {roommates.length > 0 && items.length > 0 && (
         <section>
-          <h2>Set your preferences</h2>
+          <h2>Preferences</h2>
 
-          {roommates.map(roommate => (
-            <div className="preference-card" key={roommate.id}>
-              <h3>{roommate.name}</h3>
+          {roommates.map(roommate => {
+            const total = getTotal(roommate.id)
 
-              {items.map(item => (
-                <label className="preference" key={item.id}>
-                  <span>{item.label}</span>
+            return (
+              <div className="preference-card" key={roommate.id}>
+                <h3>{roommate.name}</h3>
 
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={preferences[roommate.id]?.[item.id] || ''}
-                    onChange={e =>
-                      updatePreference(
-                        roommate.id,
-                        item.id,
-                        e.target.value
-                      )
-                    }
-                  />
-                </label>
-              ))}
+                {items.map(item => (
+                  <div className="preference" key={item.id}>
+                    <span>{item.label}</span>
 
-              <strong>
-                Total: {getTotal(roommate.id)} / 100
-              </strong>
-            </div>
-          ))}
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={preferences[roommate.id]?.[item.id] ?? ''}
+                      onChange={e =>
+                        updatePreference(
+                          roommate.id,
+                          item.id,
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                ))}
 
-          {error && <p className="error">{error}</p>}
+                <strong
+                  className={
+                    total === 100
+                      ? 'total-valid'
+                      : 'total-invalid'
+                  }
+                >
+                  Total: {total}/100
+                </strong>
 
-          <button className="calculate" onClick={calculate}>
+                {total > 100 && (
+                  <p className="error">
+                    Preferences exceed 100.
+                  </p>
+                )}
+
+                {total < 100 && (
+                  <p className="hint">
+                    Add {100 - total} more points.
+                  </p>
+                )}
+              </div>
+            )
+          })}
+
+          <button onClick={calculate}>
             Calculate split →
           </button>
         </section>
@@ -241,64 +261,25 @@ function App() {
 
       {allocation && (
         <section className="results">
-          <p>Your split</p>
-          <h2>Suggested allocation</h2>
+          <h2>Your Split</h2>
 
-          {roommates.map(roommate => {
-            const assigned = allocation[roommate.id]
+          {roommates.map(roommate => (
+            <div className="result" key={roommate.id}>
+              <h3>{roommate.name}</h3>
 
-            return (
-              <div className="result" key={roommate.id}>
-                <h3>{roommate.name}</h3>
+              {allocation[roommate.id].map(item => (
+                <div className="result-item" key={item.id}>
+                  <span>{item.label}</span>
 
-                {assigned.length === 0 ? (
-                  <span>Nothing assigned</span>
-                ) : (
-                  assigned.map(item => (
-                    <div className="result-item" key={item.id}>
-                      <span>{item.label}</span>
-                      <small>
-                        {getAssignedValue(roommate.id, item)} points
-                      </small>
-                    </div>
-                  ))
-                )}
-
-                <strong>
-                  Assigned preference:{' '}
-                  {getScores(allocation)[
-                    roommates.findIndex(r => r.id === roommate.id)
-                  ]}
-                </strong>
-              </div>
-            )
-          })}
-        </section>
-      )}
-
-      {allocation && (
-        <section className="comparison">
-          <p>Comparison</p>
-          <h2>How balanced is the split?</h2>
-
-          <div className="comparison-box">
-            <div>
-              <span>Equal split</span>
-              <strong>{getImbalance(equalScores)}</strong>
-              <small>imbalance</small>
+                  <small>
+                    Preference: {
+                      preferences[roommate.id][item.id]
+                    }
+                  </small>
+                </div>
+              ))}
             </div>
-
-            <div>
-              <span>Splitzy</span>
-              <strong>{getImbalance(splitScores)}</strong>
-              <small>imbalance</small>
-            </div>
-          </div>
-
-          <small>
-            Lower imbalance means the assigned preference values are closer
-            together.
-          </small>
+          ))}
         </section>
       )}
     </main>

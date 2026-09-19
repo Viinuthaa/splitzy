@@ -6,6 +6,12 @@ main {
   font-family: Georgia, serif;
 }
 
+header,
+section {
+  max-width: 720px;
+  margin-bottom: 45px;
+}
+
 p {
   color: #8b2635;
   letter-spacing: 4px;
@@ -23,11 +29,6 @@ h1 {
   font-weight: 500;
 }
 
-section {
-  max-width: 720px;
-  margin-bottom: 45px;
-}
-
 h2 {
   margin-bottom: 18px;
   font-size: 24px;
@@ -37,12 +38,6 @@ h2 {
 h3 {
   margin-top: 0;
   color: #8b2635;
-}
-
-.input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
 }
 
 input,
@@ -59,10 +54,6 @@ select {
   color: #241b17;
 }
 
-.input-row input:first-child {
-  flex: 1;
-}
-
 button {
   border: 1px solid #8b2635;
   background: #8b2635;
@@ -70,11 +61,19 @@ button {
   cursor: pointer;
 }
 
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.input-row input:first-child {
+  flex: 1;
+}
+
 .entry {
   display: flex;
   justify-content: space-between;
   padding: 14px 16px;
-  margin-bottom: 8px;
   border-bottom: 1px solid #c7b38f;
 }
 
@@ -83,93 +82,66 @@ button {
   border: 0;
   background: transparent;
   color: #8b2635;
-  font-size: 20px;
 }
 
-.preference-card {
-  padding: 22px;
-  margin-bottom: 18px;
+.preference-card,
+.result {
+  padding: 20px;
+  margin-top: 12px;
   border: 1px solid #b08d57;
   background: #f7f0e3;
+  color: #241b17;
 }
 
 .preference {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #d5c5a8;
-}
-
-.preference input {
-  width: 80px;
-}
-
-.preference-card strong {
-  display: block;
-  margin-top: 18px;
-}
-
-.calculate {
-  margin-top: 10px;
-}
-
-.error {
-  margin: 15px 0;
-  color: #8b2635;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.results,
-.comparison {
-  padding-top: 20px;
-  border-top: 1px solid #b08d57;
-}
-
-.result {
-  padding: 20px;
-  margin-bottom: 14px;
-  border: 1px solid #b08d57;
-  background: #f7f0e3;
-}
-
-.result-item {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
   border-bottom: 1px solid #d5c5a8;
 }
 
+.preference input {
+  width: 70px;
+}
+
+.preference-card strong {
+  display: block;
+  margin-top: 15px;
+}
+
+.total-valid {
+  color: #241b17;
+}
+
+.total-invalid {
+  color: #8b2635;
+}
+
+.error {
+  color: #8b2635;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.hint {
+  margin-top: 8px;
+  color: #6e5c4b;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.results {
+  border-top: 1px solid #b08d57;
+  padding-top: 20px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid #d5c5a8;
+}
+
 .result-item small {
   color: #6e5c4b;
-}
-
-.result > strong {
-  display: block;
-  margin-top: 16px;
-}
-
-.comparison-box {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 15px;
-}
-
-.comparison-box div {
-  flex: 1;
-  padding: 20px;
-  border: 1px solid #b08d57;
-  background: #f7f0e3;
-}
-
-.comparison-box span,
-.comparison-box strong,
-.comparison-box small {
-  display: block;
-}
-
-.comparison-box strong {
-  margin: 12px 0 4px;
-  font-size: 32px;
-  color: #8b2635;
 }

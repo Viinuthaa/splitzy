@@ -1,24 +1,17 @@
 export function calculateAllocation(roommates, items, preferences) {
-  const allocation = {}
-
-  roommates.forEach(roommate => {
-    allocation[roommate.id] = []
-  })
+  const allocation = Object.fromEntries(
+    roommates.map(roommate => [roommate.id, []])
+  )
 
   items.forEach(item => {
-    let bestRoommate = roommates[0]
-    let lowestValue = preferences[bestRoommate.id]?.[item.id] ?? 100
+    const roommate = roommates.reduce((best, current) => {
+      const bestValue = preferences[best.id]?.[item.id] ?? 100
+      const currentValue = preferences[current.id]?.[item.id] ?? 100
 
-    roommates.forEach(roommate => {
-      const value = preferences[roommate.id]?.[item.id] ?? 100
-
-      if (value < lowestValue) {
-        lowestValue = value
-        bestRoommate = roommate
-      }
+      return currentValue < bestValue ? current : best
     })
 
-    allocation[bestRoommate.id].push(item)
+    allocation[roommate.id].push(item)
   })
 
   return allocation

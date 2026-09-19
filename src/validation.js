@@ -8,8 +8,16 @@ export function validateSplit(roommates, items, preferences) {
   }
 
   for (const roommate of roommates) {
-    const total = Object.values(preferences[roommate.id] || {})
-      .reduce((sum, value) => sum + value, 0)
+    const values = Object.values(preferences[roommate.id] || {})
+
+    if (values.some(value => value < 0 || value > 100)) {
+      return `${roommate.name} has an invalid preference value.`
+    }
+
+    const total = values.reduce(
+      (sum, value) => sum + (Number(value) || 0),
+      0
+    )
 
     if (total !== 100) {
       return `${roommate.name}'s preferences must total 100.`
