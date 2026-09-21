@@ -12,10 +12,22 @@ The idea is inspired by **fair division** — finding ways to divide shared reso
 - Add chores and expenses
 - Set preference points
 - Generate a preference-based split
-- Compare the split with a simple baseline
+- Validate preference totals
+- Handle equal preferences with a simple fairness tie-break
 
 ## Tech
 
-React · JavaScript · CSS · Vite
+React · TypeScript · CSS · Vite
 
-Built as a small project to experiment with fairer ways of splitting things between roommates.
+## Why I built it
+
+Splitting chores between roommates can get messy when everyone has different preferences.
+
+I wanted to experiment with a simple way of taking those preferences into account instead of treating every split equally.
+
+## What's next
+
+- Better allocation strategies
+- More detailed expense splitting
+- Saved splits
+- Backend and database support
