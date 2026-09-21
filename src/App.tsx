@@ -1,12 +1,12 @@
 import "./App.css"
 import { useState } from "react"
-import {
-  calculateAllocation,
-  type Item,
-  type Preferences,
-  type Roommate,
-  type Allocation
-} from "./allocation"
+import { calculateAllocation } from "./allocation"
+import type {
+  Allocation,
+  Item,
+  Preferences,
+  Roommate
+} from "./types"
 import { validateSplit } from "./validation"
 
 function App() {

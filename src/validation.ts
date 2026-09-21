@@ -1,4 +1,8 @@
-import type { Item, Preferences, Roommate } from "./allocation"
+import type {
+  Item,
+  Preferences,
+  Roommate
+} from "./types"
 
 export function validateSplit(
   roommates: Roommate[],
