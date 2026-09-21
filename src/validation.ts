@@ -13,7 +13,7 @@ export function validateSplit(
     return "Add at least two roommates."
   }
 
-  if (items.length < 1) {
+  if (!items.length) {
     return "Add at least one chore or expense."
   }
 

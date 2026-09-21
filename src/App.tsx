@@ -29,10 +29,7 @@ function App() {
 
     setRoommates([
       ...roommates,
-      {
-        id: Date.now(),
-        name: name.trim()
-      }
+      { id: Date.now(), name: name.trim() }
     ])
 
     setName("")
@@ -54,22 +51,21 @@ function App() {
   function addItem() {
     if (!itemName.trim()) return
 
-    if (
-      type === "expense" &&
-      (!cost || Number(cost) <= 0)
-    ) {
+    if (type === "expense" && (!cost || Number(cost) <= 0)) {
       setError("Enter a valid expense amount.")
       return
     }
 
-    const newItem: Item = {
-      id: Date.now(),
-      label: itemName.trim(),
-      type,
-      cost: type === "expense" ? Number(cost) : 0
-    }
+    setItems([
+      ...items,
+      {
+        id: Date.now(),
+        label: itemName.trim(),
+        type,
+        cost: type === "expense" ? Number(cost) : 0
+      }
+    ])
 
-    setItems([...items, newItem])
     setItemName("")
     setCost("")
     setError("")
@@ -77,9 +73,7 @@ function App() {
   }
 
   function removeItem(id: number) {
-    setItems(
-      items.filter(item => item.id !== id)
-    )
+    setItems(items.filter(item => item.id !== id))
 
     const updated = { ...preferences }
 
@@ -126,13 +120,12 @@ function App() {
     setAllocation(null)
   }
 
-  function getTotal(roommateId: number) {
-    return Object.values(
-      preferences[roommateId] || {}
-    ).reduce(
-      (sum, value) => sum + (Number(value) || 0),
-      0
-    )
+  function getTotal(id: number) {
+    return Object.values(preferences[id] || {})
+      .reduce(
+        (sum, value) => sum + (Number(value) || 0),
+        0
+      )
   }
 
   function calculate() {
@@ -174,16 +167,12 @@ function App() {
             onChange={e => setName(e.target.value)}
             placeholder="Roommate name"
           />
-
-          <button onClick={addRoommate}>
-            Add
-          </button>
+          <button onClick={addRoommate}>Add</button>
         </div>
 
         {roommates.map(roommate => (
           <div className="entry" key={roommate.id}>
             <span>{roommate.name}</span>
-
             <button
               onClick={() =>
                 removeRoommate(roommate.id)
@@ -201,9 +190,7 @@ function App() {
         <div className="input-row">
           <input
             value={itemName}
-            onChange={e =>
-              setItemName(e.target.value)
-            }
+            onChange={e => setItemName(e.target.value)}
             placeholder="Cleaning, groceries..."
           />
 
@@ -225,21 +212,15 @@ function App() {
               type="number"
               min="0"
               value={cost}
-              onChange={e =>
-                setCost(e.target.value)
-              }
+              onChange={e => setCost(e.target.value)}
               placeholder="₹"
             />
           )}
 
-          <button onClick={addItem}>
-            Add
-          </button>
+          <button onClick={addItem}>Add</button>
         </div>
 
-        {error && (
-          <p className="error">{error}</p>
-        )}
+        {error && <p className="error">{error}</p>}
 
         {items.map(item => (
           <div className="entry" key={item.id}>
@@ -250,9 +231,7 @@ function App() {
             </span>
 
             <button
-              onClick={() =>
-                removeItem(item.id)
-              }
+              onClick={() => removeItem(item.id)}
             >
               ×
             </button>
@@ -260,81 +239,77 @@ function App() {
         ))}
       </section>
 
-      {roommates.length > 0 &&
-        items.length > 0 && (
-          <section>
-            <h2>Preferences</h2>
+      {roommates.length > 0 && items.length > 0 && (
+        <section>
+          <h2>Preferences</h2>
 
-            {roommates.map(roommate => {
-              const total = getTotal(
-                roommate.id
-              )
+          {roommates.map(roommate => {
+            const total = getTotal(roommate.id)
 
-              return (
-                <div
-                  className="preference-card"
-                  key={roommate.id}
-                >
-                  <h3>{roommate.name}</h3>
+            return (
+              <div
+                className="preference-card"
+                key={roommate.id}
+              >
+                <h3>{roommate.name}</h3>
 
-                  {items.map(item => (
-                    <div
-                      className="preference"
-                      key={item.id}
-                    >
-                      <span>{item.label}</span>
-
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={
-                          preferences[
-                            roommate.id
-                          ]?.[item.id] ?? ""
-                        }
-                        onChange={e =>
-                          updatePreference(
-                            roommate.id,
-                            item.id,
-                            e.target.value
-                          )
-                        }
-                      />
-                    </div>
-                  ))}
-
-                  <strong
-                    className={
-                      total === 100
-                        ? "total-valid"
-                        : "total-invalid"
-                    }
+                {items.map(item => (
+                  <div
+                    className="preference"
+                    key={item.id}
                   >
-                    Total: {total}/100
-                  </strong>
+                    <span>{item.label}</span>
 
-                  {total > 100 && (
-                    <p className="error">
-                      Preferences exceed 100.
-                    </p>
-                  )}
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={
+                        preferences[roommate.id]?.[
+                          item.id
+                        ] ?? ""
+                      }
+                      onChange={e =>
+                        updatePreference(
+                          roommate.id,
+                          item.id,
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                ))}
 
-                  {total < 100 && (
-                    <p className="hint">
-                      Add {100 - total} more
-                      points.
-                    </p>
-                  )}
-                </div>
-              )
-            })}
+                <strong
+                  className={
+                    total === 100
+                      ? "total-valid"
+                      : "total-invalid"
+                  }
+                >
+                  Total: {total}/100
+                </strong>
 
-            <button onClick={calculate}>
-              Calculate split →
-            </button>
-          </section>
-        )}
+                {total > 100 && (
+                  <p className="error">
+                    Preferences exceed 100.
+                  </p>
+                )}
+
+                {total < 100 && (
+                  <p className="hint">
+                    Add {100 - total} more points.
+                  </p>
+                )}
+              </div>
+            )
+          })}
+
+          <button onClick={calculate}>
+            Calculate split →
+          </button>
+        </section>
+      )}
 
       {allocation && (
         <section className="results">
@@ -353,14 +328,9 @@ function App() {
                   key={item.id}
                 >
                   <span>{item.label}</span>
-
                   <small>
                     Preference:{" "}
-                    {
-                      preferences[
-                        roommate.id
-                      ][item.id]
-                    }
+                    {preferences[roommate.id][item.id]}
                   </small>
                 </div>
               ))}
