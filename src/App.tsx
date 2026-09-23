@@ -16,33 +16,22 @@ import { validateSplit } from "./validation"
 function App() {
   const [roommates, setRoommates] =
     useState<Roommate[]>([])
-
   const [items, setItems] =
     useState<Item[]>([])
-
   const [preferences, setPreferences] =
     useState<Preferences>({})
-
   const [allocation, setAllocation] =
     useState<Allocation | null>(null)
-
   const [expenseShares, setExpenseShares] =
     useState<ExpenseShare | null>(null)
+  const [error, setError] = useState("")
 
-  const [error, setError] =
-    useState("")
-
-  const [name, setName] =
-    useState("")
-
+  const [name, setName] = useState("")
   const [itemName, setItemName] =
     useState("")
-
   const [type, setType] =
     useState<"chore" | "expense">("chore")
-
-  const [cost, setCost] =
-    useState("")
+  const [cost, setCost] = useState("")
 
   function addRoommate() {
     if (!name.trim()) return
@@ -67,10 +56,7 @@ function App() {
       )
     )
 
-    const updated = {
-      ...preferences
-    }
-
+    const updated = { ...preferences }
     delete updated[id]
 
     setPreferences(updated)
@@ -116,9 +102,7 @@ function App() {
       items.filter(item => item.id !== id)
     )
 
-    const updated = {
-      ...preferences
-    }
+    const updated = { ...preferences }
 
     roommates.forEach(roommate => {
       if (updated[roommate.id]) {
@@ -152,9 +136,7 @@ function App() {
 
     const number = Number(value)
 
-    if (number < 0 || number > 100) {
-      return
-    }
+    if (number < 0 || number > 100) return
 
     setPreferences({
       ...preferences,
@@ -211,6 +193,53 @@ function App() {
     )
   }
 
+  function getPreferenceScore(
+    roommateId: number
+  ) {
+    if (!allocation) return 0
+
+    return allocation[roommateId].reduce(
+      (sum, item) =>
+        sum +
+        Number(
+          preferences[roommateId]?.[
+            item.id
+          ] ?? 0
+        ),
+      0
+    )
+  }
+
+  function getChoreCount(
+    roommateId: number
+  ) {
+    if (!allocation) return 0
+
+    return allocation[roommateId].filter(
+      item => item.type === "chore"
+    ).length
+  }
+
+  function getExpenseCount(
+    roommateId: number
+  ) {
+    if (!allocation) return 0
+
+    return allocation[roommateId].filter(
+      item => item.type === "expense"
+    ).length
+  }
+
+  function formatCount(
+    count: number,
+    singular: string,
+    plural: string
+  ) {
+    return `${count} ${
+      count === 1 ? singular : plural
+    }`
+  }
+
   const totalExpenses =
     items
       .filter(
@@ -250,9 +279,7 @@ function App() {
             className="entry"
             key={roommate.id}
           >
-            <span>
-              {roommate.name}
-            </span>
+            <span>{roommate.name}</span>
 
             <button
               onClick={() =>
@@ -444,6 +471,31 @@ function App() {
                 {roommate.name}
               </h3>
 
+              <p className="hint">
+                {formatCount(
+                  getChoreCount(
+                    roommate.id
+                  ),
+                  "chore",
+                  "chores"
+                )}{" "}
+                ·{" "}
+                {formatCount(
+                  getExpenseCount(
+                    roommate.id
+                  ),
+                  "expense item",
+                  "expense items"
+                )}
+              </p>
+
+              <strong>
+                Preference score:{" "}
+                {getPreferenceScore(
+                  roommate.id
+                )}
+              </strong>
+
               {allocation[
                 roommate.id
               ].map(item => (
@@ -472,7 +524,7 @@ function App() {
 
               {expenseShares && (
                 <strong>
-                  Expense share: ₹
+                  Equal expense share: ₹
                   {expenseShares[
                     roommate.id
                   ].toFixed(2)}
