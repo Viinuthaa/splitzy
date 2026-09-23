@@ -11,89 +11,41 @@ export function calculateAllocation(
   items: Item[],
   preferences: Preferences
 ): Allocation {
-  const allocation: Allocation =
-    Object.fromEntries(
-      roommates.map(roommate => [
-        roommate.id,
-        []
-      ])
-    )
+  const allocation = Object.fromEntries(
+    roommates.map(r => [r.id, []])
+  ) as Allocation
 
-  items.forEach(item => {
-    const roommate = roommates.reduce(
-      (best, current) => {
-        const bestPreference =
-          Number(
-            preferences[best.id]?.[item.id] ?? 0
-          )
+  for (const item of items) {
+    const roommate = roommates.reduce((best, current) => {
+      const score = (id: number) =>
+        Number(preferences[id]?.[item.id] ?? 0) -
+        allocation[id].length * 10
 
-        const currentPreference =
-          Number(
-            preferences[current.id]?.[item.id] ?? 0
-          )
-
-        const bestScore =
-          bestPreference -
-          allocation[best.id].length * 10
-
-        const currentScore =
-          currentPreference -
-          allocation[current.id].length * 10
-
-        if (currentScore > bestScore) {
-          return current
-        }
-
-        if (currentScore === bestScore) {
-          return allocation[current.id].length <
-            allocation[best.id].length
-            ? current
-            : best
-        }
-
-        return best
-      }
-    )
+      return score(current.id) > score(best.id)
+        ? current
+        : best
+    })
 
     allocation[roommate.id].push(item)
-  })
+  }
 
   return allocation
 }
 
 export function calculateExpenseShares(
   roommates: Roommate[],
-  items: Item[],
   allocation: Allocation
 ): ExpenseShare {
-  const shares: ExpenseShare =
-    Object.fromEntries(
-      roommates.map(roommate => [
-        roommate.id,
-        0
-      ])
-    )
+  const shares = Object.fromEntries(
+    roommates.map(r => [r.id, 0])
+  ) as ExpenseShare
 
-  const expenses = items.filter(
-    item => item.type === "expense"
-  )
-
-  if (!expenses.length) {
-    return shares
+  for (const roommate of roommates) {
+    shares[roommate.id] =
+      allocation[roommate.id]
+        .filter(item => item.type === "expense")
+        .reduce((sum, item) => sum + item.cost, 0)
   }
-
-  const total =
-    expenses.reduce(
-      (sum, item) => sum + item.cost,
-      0
-    )
-
-  const equalShare =
-    total / roommates.length
-
-  roommates.forEach(roommate => {
-    shares[roommate.id] = equalShare
-  })
 
   return shares
 }
