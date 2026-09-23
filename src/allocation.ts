@@ -1,5 +1,6 @@
 import type {
   Allocation,
+  ExpenseShare,
   Item,
   Preferences,
   Roommate
@@ -58,4 +59,41 @@ export function calculateAllocation(
   })
 
   return allocation
+}
+
+export function calculateExpenseShares(
+  roommates: Roommate[],
+  items: Item[],
+  allocation: Allocation
+): ExpenseShare {
+  const shares: ExpenseShare =
+    Object.fromEntries(
+      roommates.map(roommate => [
+        roommate.id,
+        0
+      ])
+    )
+
+  const expenses = items.filter(
+    item => item.type === "expense"
+  )
+
+  if (!expenses.length) {
+    return shares
+  }
+
+  const total =
+    expenses.reduce(
+      (sum, item) => sum + item.cost,
+      0
+    )
+
+  const equalShare =
+    total / roommates.length
+
+  roommates.forEach(roommate => {
+    shares[roommate.id] = equalShare
+  })
+
+  return shares
 }

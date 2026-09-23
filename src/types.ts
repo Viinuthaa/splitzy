@@ -16,3 +16,5 @@ export type Preferences = Record<
 >
 
 export type Allocation = Record<number, Item[]>
+
+export type ExpenseShare = Record<number, number>
