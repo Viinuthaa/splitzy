@@ -1,5 +1,5 @@
 import "./App.css"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   calculateAllocation,
   calculateExpenseShares
@@ -12,6 +12,11 @@ import type {
   Roommate
 } from "./types"
 import { validateSplit } from "./validation"
+import {
+  deleteSavedSplit,
+  loadSplit,
+  saveSplit
+} from "./storage"
 
 function App() {
   const [roommates, setRoommates] =
@@ -25,6 +30,8 @@ function App() {
   const [expenseShares, setExpenseShares] =
     useState<ExpenseShare | null>(null)
   const [error, setError] = useState("")
+  const [saveMessage, setSaveMessage] =
+    useState("")
 
   const [name, setName] = useState("")
   const [itemName, setItemName] =
@@ -32,6 +39,16 @@ function App() {
   const [type, setType] =
     useState<"chore" | "expense">("chore")
   const [cost, setCost] = useState("")
+
+  useEffect(() => {
+    const saved = loadSplit()
+
+    if (!saved) return
+
+    setRoommates(saved.roommates)
+    setItems(saved.items)
+    setPreferences(saved.preferences)
+  }, [])
 
   function addRoommate() {
     if (!name.trim()) return
@@ -193,6 +210,47 @@ function App() {
     )
   }
 
+  function saveCurrentSplit() {
+    if (!roommates.length || !items.length) {
+      setSaveMessage(
+        "Add roommates and items first."
+      )
+      return
+    }
+
+    saveSplit(
+      roommates,
+      items,
+      preferences
+    )
+
+    setSaveMessage("Split saved.")
+  }
+
+  function loadSaved() {
+    const saved = loadSplit()
+
+    if (!saved) {
+      setSaveMessage(
+        "No saved split found."
+      )
+      return
+    }
+
+    setRoommates(saved.roommates)
+    setItems(saved.items)
+    setPreferences(saved.preferences)
+    setAllocation(null)
+    setExpenseShares(null)
+    setError("")
+    setSaveMessage("Saved split loaded.")
+  }
+
+  function removeSaved() {
+    deleteSavedSplit()
+    setSaveMessage("Saved split deleted.")
+  }
+
   function getPreferenceScore(
     roommateId: number
   ) {
@@ -255,6 +313,26 @@ function App() {
       <header>
         <p>Splitzy</p>
         <h1>Who's splitting?</h1>
+
+        <div className="input-row">
+          <button onClick={saveCurrentSplit}>
+            Save split
+          </button>
+
+          <button onClick={loadSaved}>
+            Load saved
+          </button>
+
+          <button onClick={removeSaved}>
+            Delete saved
+          </button>
+        </div>
+
+        {saveMessage && (
+          <p className="hint">
+            {saveMessage}
+          </p>
+        )}
       </header>
 
       <section>
