@@ -1,33 +1,30 @@
 # Splitzy
 
-Splitzy is a small web app for splitting chores and expenses between roommates.
+**A preference-based way to split chores & expenses.**
 
-Instead of simply dividing everything equally, Splitzy takes each person's preferences into account and creates a preference-based allocation.
+Splitzy helps roommates divide shared tasks and expenses based on what each person actually prefers — instead of simply splitting everything equally.
 
-The idea is inspired by **fair division** — finding ways to divide shared resources while considering what each person values or dislikes.
+## Preview
 
-## Features
+![Splitzy Preview](./screenshot.png)
 
-- Add roommates
-- Add chores and expenses
-- Set preference points
-- Generate a preference-based split
-- Validate preference totals
-- Handle equal preferences with a simple fairness tie-break
+###  Features
 
-## Tech
+-  Roommate management
+-  Chore & expense allocation
+-  Preference-based splitting
+-  Smart tie-breaking
+-  Expense tracking
+-  Save & load splits
 
-React · TypeScript · CSS · Vite
+###  Built With
 
-## Why I built it
+React · TypeScript · Vite · CSS
 
-Splitting chores between roommates can get messy when everyone has different preferences.
+## How it works
 
-I wanted to experiment with a simple way of taking those preferences into account instead of treating every split equally.
+Each roommate assigns preference points to the available chores and expenses.
 
-## What's next
+Splitzy uses those preferences to allocate items. When preferences are tied, it balances the allocation using the number of assigned items, assigned expense value, and assignment history.
 
-- Better allocation strategies
-- More detailed expense splitting
-- Saved splits
-- Backend and database support
+Expenses are assigned to the roommate who receives them rather than being automatically divided equally.
